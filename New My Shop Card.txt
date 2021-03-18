@@ -1,0 +1,61 @@
+htp.p('<!DOCTYPE html>');
+htp.p('<html>');
+htp.p('<head>');
+htp.p('<style>
+.card {
+    display:block;
+    padding: 5px;
+    margin: auto;
+}
+}
+
+.price {
+  color: red;
+  font-size: 16x;
+}
+
+.card button {
+  border: none;
+  outline: 0;
+  padding: 12px;
+  color: white;
+  background-color: #000;
+  text-align: center;
+  cursor: pointer;
+  width: auto;
+  font-size: 16px;
+}
+
+.card button:hover {
+  opacity: 0.7;
+}
+</style>');
+htp.p('</head>');
+htp.p('<body>');
+
+for u in (select a.PRODUCT_ID,
+    decode(nvl(dbms_lob.getlength(a.PRODUCT_IMAGE),0),0,null, 
+       '<img src="' 
+       ||apex_util.get_blob_file_src('P9_PRODUCT_IMAGE',a.PRODUCT_ID)||'"height="200" width="300"/>') PRODUCT_IMAGE,
+    a.PRODUCT_DESCRIPTION, 
+    b.PROOUCT_SIZE,
+    C.SELLING_PRICE,
+    C.DISCOUNT,
+    C.ORIGINAL_PRICE,
+    a.PRODUCT_CODE,
+    a.PRODUCT_NAME    
+ from PRODUCT a, PURCHASE_DETALIS b, PRODUCT_PRICE c
+ where a.PRODUCT_ID=b.PRODUCT_ID)
+          
+loop
+htp.p('<div class="card">
+  '||u.PRODUCT_IMAGE||'
+  <h3>'||u.PRODUCT_CODE||',' ||u.PRODUCT_NAME||'</h3>
+  <p>'||u.PRODUCT_DESCRIPTION||'</p>
+  <p class="price">'||u.SELLING_PRICE||', Discount '||u.DISCOUNT||', Last Price '||u.ORIGINAL_PRICE||'</p>
+  <p><button>Add to Cart</button></p>
+</div>');
+end loop;
+
+htp.p('</body>');
+htp.p('</html>');

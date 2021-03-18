@@ -1,0 +1,13 @@
+রিপোর্টের মধ্যে দিতে হবে
+select OID,
+       SUPPLIER_NAME,
+       "PICTURE",
+       MOBOLE_NO,
+       OFFICIAL_NUMBER,
+       case when STATUS_ID = 1 then 'green'
+  when STATUS_ID = 2 then 'red'
+  end color_con
+  from SUPPLIER
+====================================
+পরে আইটেরম HTML Expression এর মধ্যে দিতে হবে----------------------
+<span style="background-color:#white;color:#COLOR_CON#;font-weight:bold;font-size: 1.7rem; padding: 0.2rem 1.2rem; font-weight: 600;">#STATUS_ID#</span>

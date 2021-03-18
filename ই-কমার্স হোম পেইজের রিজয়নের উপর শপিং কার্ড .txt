@@ -1,0 +1,20 @@
+ই-কমার্স হোম পেইজের রিজয়নের উপর শপিং কার্ড 
+=========================================
+
+For x in (select PRODUCT_ID,PRODUCT_CODE,PRODUCT_NAME,PRODUCT_DESCRIPTION,
+       decode(nvl(dbms_lob.getlength(PRODUCT_IMAGE),0),0,null, 
+       '<img src="' 
+       ||apex_util.get_blob_file_src('P9_PRODUCT_IMAGE',PRODUCT_ID)||'"height="260" width="185"/>') PRODUCT_IMAGE from PRODUCT where ALL_SLIDE_ID = 1)
+
+loop
+htp.p('<table align="center">
+      <tr>
+  <td>&nbsp;&nbsp;</td>       
+  <td align="left"><div style="background-color:#FEF138; ;border: 2px solid white; border-radius: 18px; color:#641132; font-size: 2.8rem; line-height: 3.2rem; padding: 1.2rem 2.2rem; font-weight: 700;"> 
+      <a  href="f?p='|| V('APP_ID') ||':10:'|| V('SESSION') ||'::NO:10:P10_SEARCH_ITEM:'||x.PRODUCT_ID||'" target="_blank">SHOP NEW </a></div></td>
+  <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'||x.PRODUCT_IMAGE||'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a></td>
+  <td align="center"><p><span style="background-color:#FFFFFF; color:#55061E;border: 1px solid red;border-radius: 16px;font-size: 4.5rem; line-height: 2.2rem; padding: 1.2rem 2.2rem; font-weight: 900;"><b>Eid Special Big Collection </b><br></span></p>    
+  <br><br><span style="background-color:#C61758; color:#FFFFFF;border: 1px solid red;border-radius: 16px;font-size: 2.3rem; line-height: 3.2rem; padding: 1.2rem 2.2rem; font-weight: 600;"><b>'|| x.PRODUCT_NAME ||'</b><br></span></td><br/>
+
+</table><br>');
+  end loop; 

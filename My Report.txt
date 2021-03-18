@@ -1,0 +1,149 @@
+Function and Global Variable Declaration
+===========================================
+function printdiv(printpage)
+{
+var headstr = "<html><head><title></title></head><body>";
+var footstr = "</body>";
+var newstr = document.all.item(printpage).innerHTML;
+var oldstr = document.body.innerHTML;
+document.body.innerHTML = headstr+newstr+footstr;
+window.print();
+document.body.innerHTML = oldstr;
+return false;
+}
+===============================================
+Inline
+=================================
+.button {
+    background-color: #4CAF50; /* Green */
+    border: none;
+    color: white;
+    padding: 2px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 2px 2px;
+    -webkit-transition-duration: 0.4s; /* Safari */
+    transition-duration: 0.4s;
+    cursor: pointer;
+    width:5px;
+    border-radius: 1px;
+}
+======================================
+Source
+PL/SQL Code
+============================================
+DECLARE
+n number;
+Begin
+n:=0;
+
+Htp.p('<a id="b_exit" type="button1" class="button button3" class="exit" '||'href="'||APEX_UTIL.PREPARE_URL('f?p=&APP_ID.:1:&SESSION.::&DEBUG.::::')||'">Close</a>
+<input type="button1" class="button button1"  class="t-Icon t-Icon--right fa fa-print" id="print" type="button" onclick="printdiv(''div_print1'');" value="Print"/><br/>
+     
+<div id="div_print1" style="margin-top:5px;"> '); 
+
+
+
+
+htp.p('<!DOCTYPE html>');
+htp.p('<html lang="en">');
+htp.p('<meta charset="UTF-8">');
+htp.p('<TITLE>My Shop, Feni</TITLE>');
+htp.p('<style type="text/css">
+      body{
+          width: auto;
+      }
+      /*header table 1 css*/
+      #table_1 h3{
+          font-size: 30px;
+          margin:0px;
+      }
+      #table_1 tr td{
+          font-size: 20px;
+          margin:0px;
+      }
+      #table_3,
+      #table_3 tr td{
+          font-size: 15px;
+          margin:0px;
+      }
+      #table_3 th,
+      #table_3 td{
+        border: 1px solid #D5D8DC;
+        border-collapse: collapse;
+      }
+      
+th {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  text-align: center;
+  background-color: #4CAF50;;
+  color: white;
+}
+    </style>');
+htp.p('</head>');
+
+
+htp.p('<body>');
+
+for u in (select USER_ID,USERNAME,FULL_NAME,PHONE_NUMBER,EMAIL_ADDRESS from MY_USERS where upper(USERNAME) = :APP_USER)
+loop
+htp.p('<table id="table_1" width="800px" style="text-align:center;">
+      <tr>
+      <td><h3><i>'||u.FULL_NAME||'</i></h3></td>
+      </tr>
+      <tr>
+      <td>0'||u.PHONE_NUMBER||'</td>
+      </tr>
+      <tr>
+      <td>'||u.EMAIL_ADDRESS||'</td>
+      </tr>
+</table><br>');
+  end loop; 
+
+
+for u in (select USER_ID,USERNAME,FULL_NAME,PHONE_NUMBER,EMAIL_ADDRESS from MY_USERS where upper(USERNAME) = :APP_USER)
+loop
+htp.p('<table id="table_2" width="100%" style="padding-bottom: 10px;">
+            <tr><td colspan="5">Company Name : <b>'||u.FULL_NAME||'</b></td></tr>');
+      htp.p('<tr><td colspan="5">User Name : <b>'||u.USERNAME||'</b></td></tr>');
+      htp.p('<tr><td colspan="5">Phone Numbar : <b>0'||u.PHONE_NUMBER||'</b></td></tr>');
+      htp.p('<tr><td colspan="5">EMAIL ADDRESS : <b>'||u.EMAIL_ADDRESS||'</b></td><td colspan="1" style="text-align:right;">Date : <b>'||(sysdate)||'</b></td>
+            </tr>
+      
+
+</table><br>');
+end loop;
+
+
+htp.p('<table id="table_3" width="100%" cellpadding="5px" style="text-align: center;">
+      <tr>
+      <th width="5%">ক্রমিক নাম্বার </th>
+      <th width="5%">ছবি </th>
+      <th width="20%">ক্রেতার নাম </th>
+      <th width="15%">মোবাইল নাম্বার </th>
+      <th width="40%">ঠিকানা </th>
+      <th width="15%">অন্যান্য তথ্য </th>
+    </tr>');
+
+for x in (select OID,CUSTOMER_NAME,MOBOLE_NO,ADDRESS,NOTE,
+          decode(nvl(dbms_lob.getlength(PICTURE),0),0,null, 
+                 '<img src="' ||apex_util.get_blob_file_src('P14_PICTURE',OID)||'" height="75" width="75"/>') 
+          PICTURE from CUSTOMER)
+loop
+n:=n+1;
+htp.p('<tr>
+      <td >'||CONV_ENGLISH_BANGLA(n)|| '</td>
+      <td >'||x.PICTURE|| '</td>
+      <td >'||x.CUSTOMER_NAME|| '</td>
+      <td >০'||CONV_ENGLISH_BANGLA(x.MOBOLE_NO)|| '</td>
+      <td >'||x.ADDRESS|| '</td>
+      <td >'||x.NOTE|| '</td>
+   </tr>');
+  end loop;
+  
+htp.p('</table>');
+htp.p('</div>');
+end;

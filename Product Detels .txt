@@ -1,0 +1,89 @@
+htp.p('<!DOCTYPE html>');
+htp.p('<html lang="en">');
+htp.p('<meta charset="UTF-8">');
+htp.p('<TITLE>My Shop, Feni</TITLE>');
+htp.p('<style type="text/css">
+      body{
+          width: auto;
+      }
+      /*header table 1 css*/
+      #table_1 h3{
+          font-size: 30px;
+          margin:0px;
+      }
+      #table_1 tr td{
+          font-size: 20px;
+          margin:0px;
+      }
+      #table_3,
+      #table_3 tr td{
+          font-size: 15px;
+          margin:0px;
+      }
+      #table_3 th,
+      #table_3 td{
+        border: 0px;
+      }
+      
+th {
+  padding-top: 2px;
+  padding-bottom: 0px;
+  text-align: center;
+  background-color: #4CAF50;
+  color: white;
+}
+    </style>');
+htp.p('</head>');
+
+
+htp.p('<body>');
+
+for u in (select a.PRODUCT_ID,CASE WHEN NVL(dbms_lob.getlength(a.PRODUCT_IMAGE),0) = 0
+    THEN NULL 
+    ELSE CASE WHEN a.MIME_TYPE like 'image%'
+    THEN '<img style="max-width:250px" width="350px" src="'||apex_util.get_blob_file_src('P92_PRODUCT_IMAGE',a.PRODUCT_ID)||'" />' 
+    ELSE 
+    '<a href="'||apex_util.get_blob_file_src('P86_PRODUCT_IMAGE',a.PRODUCT_ID)||'">Download</a>'
+end
+    END as pic,a.PRODUCT_CODE,a.PRODUCT_NAME,a.PRODUCT_DESCRIPTION,b.SELLING_PRICE,b.DISCOUNT,b.ORIGINAL_PRICE from PRODUCT a, PRODUCT_PRICE b 
+          where a.PRODUCT_ID = b.PRODUCT_ID and a.PRODUCT_ID=:P47_ID)
+loop
+htp.p('<table id="table_2" width="100%" style="padding-bottom: 5px;">
+      <tr><td colspan="5">'||u.pic||'</td><td colspan="5" style="text-align:left;padding-left:50px;font-size:17px;line-height:1.4em">Product Code : '||u.PRODUCT_CODE||',    
+      <br>Product Name : '||u.PRODUCT_NAME||', 
+      <br><br>Product Description : '||u.PRODUCT_DESCRIPTION||', 
+      <br><br> Price : <b>'||u.SELLING_PRICE||'</b>, &nbsp&nbsp&nbsp Discount : <b>'||u.DISCOUNT||',
+      <br><b>Current Price : '||u.ORIGINAL_PRICE||'
+      </b></td>
+            </tr>
+</table><br>');
+end loop;
+
+htp.p('<table id="table_3" width="100%" cellpadding="5px" style="text-align: center;">
+      <tr>
+      <th width="5%"></th>
+      <th width="5%"></th>
+    </tr>');
+
+for x in (select c.COLOR,c.FABRIC,c.GENDER,STYLE,c.BRAND,c.PRODUCT_TYPE,c.OTHERS,c.PRODUCT_ID from PRODUCT_DETELS c, PRODUCT d
+          where c.PRODUCT_ID = d.PRODUCT_ID and c.PRODUCT_ID=:P47_ID)
+loop
+htp.p('<tr>
+      <td style="text-align:left;font-size:17px;line-height:1.4em;width="50%";colspan="1";>Color : '||x.COLOR|| '</td>
+      <td style="text-align:left;font-size:17px;line-height:1.4em;width="50%";colspan="1";>Fabric : '||x.FABRIC|| '</td>
+      </tr>
+      <tr>
+      <td style="text-align:left;font-size:17px;line-height:1.4em;width="50%";colspan="1";>Gender : '||x.GENDER|| '</td>
+      <td style="text-align:left;font-size:17px;line-height:1.4em;width="50%";colspan="1";>Style : '||x.STYLE|| '</td>
+      </tr>
+      <tr>
+      <td style="text-align:left;font-size:17px;line-height:1.4em;width="50%";colspan="1";>Brand : '||x.BRAND|| '</td>
+      <td style="text-align:left;font-size:17px;line-height:1.4em;width="50%";colspan="1";>Product Type : '||x.PRODUCT_TYPE|| '</td>
+      </tr>
+      <tr>
+      <td style="text-align:left;font-size:17px;line-height:1.4em;width="50%";colspan="1";>Others : '||x.OTHERS||'</td>
+   </tr>');
+   
+end loop;
+  
+htp.p('</table>');

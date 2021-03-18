@@ -1,0 +1,145 @@
+Function and Global Variable Declaration
+===========================================
+function printdiv(printpage)
+{
+var headstr = "<html><head><title></title></head><body>";
+var footstr = "</body>";
+var newstr = document.all.item(printpage).innerHTML;
+var oldstr = document.body.innerHTML;
+document.body.innerHTML = headstr+newstr+footstr;
+window.print();
+document.body.innerHTML = oldstr;
+return false;
+}
+===============================================
+Inline
+=================================
+.button {
+    background-color: #4CAF50; /* Green */
+    border: none;
+    color: white;
+    padding: 2px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 2px 2px;
+    -webkit-transition-duration: 0.4s; /* Safari */
+    transition-duration: 0.4s;
+    cursor: pointer;
+    width:5px;
+    border-radius: 1px;
+}
+======================================
+Source
+PL/SQL Code
+============================================
+declare
+a varchar2(200);
+b varchar2(200);
+c date;
+d number;
+e number;
+f number;
+g number;
+h varchar2(200);
+i varchar2(200);
+j varchar2(200);
+k varchar2(200);
+begin
+select INVNO,(select CUSTOMER_NAME from CUSTOMER where OID=CUST_ID)CUSTOMER_NAME,INVIO_DATE,TOTAL,DISCOUNT,PAYMENT,DUE into a,b,c,d,e,f,g from SALES_MST where INVNO=:P73_INVNO;
+select SHOP_NAME,ADDRESS,MOBOLE_NO,EMAIL into h,i,j,k from MY_SHOP_NAME where OID=1;
+
+
+htp.p('<style>
+[contenteditable="true"]:hover{
+  outline: lightblue auto 5px;
+  outline: -webkit-focus-ring-color auto 5px;
+}
+body{
+  margin-top: auto;
+}
+        
+    </style>');
+
+Htp.p('<input type="button3" class="button button3"  class="t-Icon t-Icon--right fa fa-print" id="print" type="button" onclick="printdiv(''div_print1'');" value="Print"/><br/>
+<div id="div_print1"style="margin-top:1px;"'); 
+
+htp.p('</head>');
+
+
+htp.p('<body>');
+
+htp.p('<table width="100%" style="margin-bottom: 10px;margin-top: 25px;">
+            <tr><td colspan="5"><span style="font-size: 32px;"><b>'||h||'</b></span></td></tr>');
+      htp.p('<tr><td colspan="5"><b>'||i||'</b></td></tr>');
+      htp.p('<tr><td colspan="5"><b>0'||j||'</b></td>
+            <td colspan="1" style="text-align:right;"> Invoice No- : <b>'||a||'</b></td></tr>');
+      htp.p('<tr><td colspan="5"><b>'||k||'</b></td>
+            <td colspan="1" style="text-align:right;">Date- : <b>'||c||'</b></td>
+            </tr>
+</table><br>');
+
+ 
+  htp.p('<section class="description">
+    <h5>Invoice Notes / Details</h5>
+    <p contenteditable="true">
+      Hey '||b||', this invoice covers the last few development updates.  Many thanks!<br><br>
+    </p>
+  </section>');
+ 
+ htp.p('<table width="100%" border="1" style="border-collapse:collapse;font-size: 18px; cellpadding="5px" >
+
+        <tr>
+          <td>Item</td>
+          <td>Qty</td>
+          <td><span style="margin-left:5Px;">Rate</span></td>
+          <td><span style="margin-left:5Px;">Discount</span></td>
+          <td><span style="margin-left:5Px;">Total Taka</span></td>
+        </tr>');
+   for x in ( select (select PRODUCT_NAME from PRODUCT where PRODUCT_ID = ITEM_NAME) ITEM_NAME,RATE,QTY,DISCOUNT,TOTAL from SALES_DTLS 
+             where INVNO=:P73_INVNO)
+   loop
+      htp.p('<tbody>
+        <tr>
+          <td>
+            '||x.ITEM_NAME||'
+          </td>
+          <td>
+           '||x.qty||'
+          </td>
+          <td><span style="margin-left:5Px;">
+            ৳ '||x.RATE||'
+          </span></td>
+          <td><span style="margin-left:5Px;">
+            ৳'||x.DISCOUNT||'
+          </span></td>
+          <td><span style="margin-left:5Px;">
+            $'||x.TOTAL||'
+          </span></td>
+        </tr>');
+  end loop;
+  for x in (select sum(total) a from SALES_DTLS where INVNO=:P73_INVNO)
+  loop
+        htp.p('<tr>
+          <td colspan="4">
+          </td>
+          <td class="total-price"><span style="margin-left:5Px;">
+          $'||x.a||'
+          </span></td>
+        </tr>');
+  end loop;
+      htp.p('</tbody>
+    </table>
+  </section>
+  <section class="description">
+    <h5>Payment Details</h5>
+    <p contenteditable="true">
+      Please remit payment within 60 days to address above.  Thanks!
+    </p>
+    <p class="footer-text" contenteditable="true">If you have any questions, please reach out to me at Joey.L@W3BY.com
+    </p>
+  </section>
+</article>');
+htp.p('</div>');
+end;

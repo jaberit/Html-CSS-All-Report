@@ -1,0 +1,145 @@
+Function and Global Variable Declaration
+===========================================
+function printdiv(printpage)
+{
+var headstr = "<html><head><title></title></head><body>";
+var footstr = "</body>";
+var newstr = document.all.item(printpage).innerHTML;
+var oldstr = document.body.innerHTML;
+document.body.innerHTML = headstr+newstr+footstr;
+window.print();
+document.body.innerHTML = oldstr;
+return false;
+}
+===============================================
+Inline
+=================================
+.button {
+    background-color: #4CAF50; /* Green */
+    border: none;
+    color: white;
+    padding: 2px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 2px 2px;
+    -webkit-transition-duration: 0.4s; /* Safari */
+    transition-duration: 0.4s;
+    cursor: pointer;
+    width:5px;
+    border-radius: 1px;
+}
+======================================
+Source
+PL/SQL Code
+============================================
+DECLARE
+n number;
+Begin
+n:=0;
+
+
+Htp.p('<span style="margin-left:600Px;"</span><input type="button3" class="button button3"  class="t-Icon t-Icon--right fa fa-print" id="print" type="button" onclick="printdiv(''div_print1'');" value="Print"/><br/>
+     
+<div id="div_print1"style="margin-top:1px;"'); 
+
+
+htp.p('<!DOCTYPE html>');
+htp.p('<html lang="en">');
+htp.p('<meta charset="UTF-8">');
+htp.p('<TITLE>My Shop, Feni</TITLE>');
+htp.p('<style type="text/css">
+      body{
+          width: auto;
+      }
+      /*header table 1 css*/
+      #table_1 h3{
+          font-size: 30px;
+          margin:0px;
+      }
+      #table_1 tr td{
+          font-size: 20px;
+          margin:0px;
+      }
+      #table_3,
+      #table_3 tr td{
+          font-size: 15px;
+          margin:0px;
+      }
+      #table_3 th,
+      #table_3 td{
+        border: 1px solid #D5D8DC;
+        border-collapse: collapse;
+      }
+      
+th {
+  padding-top: 1px;
+  padding-bottom: 12px;
+  text-align: center;
+  background-color: #4CAF50;;
+  color: white;
+}
+    </style>');
+htp.p('</head>');
+
+
+htp.p('<body>');
+
+for u in (select c.COMPANY_NAME,c.ADDRESS,c.OFFICIAL_NUMBER,c.SUPPLIER_NAME,e.VOUCHER_NO,TO_CHAR(e.DATE1, 'DD-Mon-YYYY') Purchase_Date from SUPPLIER c, PURCHASE_MASTER e
+          where c.OID=:P88_S_N 
+          and e.VOUCHER_NO=:P88_V_N)
+          
+loop
+htp.p('<table id="table_2" width="100%" style="margin-bottom: 10px;margin-top: 25px;">
+            <tr><td colspan="5">Company Name : <b>'||u.COMPANY_NAME||'</b></td></tr>');
+      htp.p('<tr><td colspan="5">ADDRESS : <b>'||u.ADDRESS||'</b></td></tr>');
+      htp.p('<tr><td colspan="5">Official Numbar : <b>0'||u.OFFICIAL_NUMBER||'</b></td>
+            <td colspan="1" style="text-align:right;"> Voucher No : <b>'||u.VOUCHER_NO||'</b></td></tr>');
+      htp.p('<tr><td colspan="5">Supplier ADDRESS : <b>'||u.SUPPLIER_NAME||'</b></td>
+            <td colspan="1" style="text-align:right;">Purchase Date : <b>'||u.Purchase_Date||'</b></td>
+            </tr>
+</table><br>');
+end loop;
+
+
+htp.p('<table id="table_3" width="100%" cellpadding="5px" >
+      <tr>
+          <td style="text-align: center;">SL No</td>
+      <td style="text-align: center;">Item Name</td>
+      <td style="text-align: center;">Size</td>
+          <td style="text-align: center;">Purchase price</td>
+          <td style="text-align: center;"><span style="margin-left:5Px;">Quantity</span></td>
+          <td style="text-align: center;"><span style="margin-left:5Px;">Total Taka</span></td>
+        </tr>');
+
+for x in (select (select PRODUCT_NAME from PRODUCT where PRODUCT_ID = ITEM_NAME) ITEM_NAME,
+          (select SIZE_NAME from ITEM_SIZE where OID = PROOUCT_SIZE) PROOUCT_SIZE,CPU,QTY,TOTAL 
+          from PURCHASE_DETALIS where VOUCHER_NO=:P88_V_N)
+loop
+n:=n+1;
+htp.p('<tr>
+      <td >'||CONV_ENGLISH_BANGLA(n)|| '</td>
+      <td >'||x.ITEM_NAME|| '</td>
+      <td >'||x.PROOUCT_SIZE|| '</td>
+      <td style="text-align: center;">'||CONV_ENGLISH_BANGLA(x.CPU)|| '</td>
+      <td style="text-align: center;">'||CONV_ENGLISH_BANGLA(x.QTY)|| '</td>
+      <td style="text-align: center;">'||CONV_ENGLISH_BANGLA(x.TOTAL)|| '</td>
+   </tr>');
+  end loop;
+  
+  for z in (select sum(TOTAL) a from PURCHASE_DETALIS where VOUCHER_NO=:P88_V_N)
+  loop
+        htp.p('<tr>
+          <td colspan="5">
+          </td>
+          <td style="text-align: center;" class="total-price"><span style="margin-left:5Px;">
+          $'||CONV_ENGLISH_BANGLA(z.a)||'
+          </span></td>
+        </tr>');
+  end loop;
+    
+  
+htp.p('</table>');
+htp.p('</div>');
+end;
